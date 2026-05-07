@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\AdminCourtController;
 use App\Http\Controllers\Admin\AdminBookingController;
 use App\Http\Controllers\Owner\OwnerDashboardController;
 use App\Http\Controllers\Owner\OwnerCourtController;
+use App\Http\Controllers\Auth\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -73,3 +74,18 @@ Route::middleware(['auth', 'owner'])->delete('/courts/{id}', [CourtController::c
 
 // API routes for AJAX
 Route::get('/api/courts/{id}/available-slots', [CourtController::class, 'getAvailableSlots'])->name('api.courts.available-slots');
+
+// Authentication routes
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
+    
+    Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
+    Route::post('/register', [AuthController::class, 'register']);
+});
+
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+
+// Password reset routes (optional - for future implementation)
+Route::get('/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('guest')->name('password.request');
+Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->middleware('guest')->name('password.email');
